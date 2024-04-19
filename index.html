@@ -35,11 +35,11 @@
         <div class="database-script">
             <p>A continuación se muestra el script para crear la base de datos TantaTele:</p>
             <pre><code>
-DROP DATABASE IF EXISTS tantateletevuelvetonto;
+DROP DATABASE IF EXISTS tantatele;
 
-CREATE DATABASE tantateletevuelvetonto CHARACTER SET utf8mb4;
+CREATE DATABASE tantatele CHARACTER SET utf8mb4;
 
-USE tantateletevuelvetonto;
+USE tantatele;
 
 CREATE TABLE usuario (
     nick VARCHAR (50) PRIMARY KEY,
@@ -128,296 +128,322 @@ INSERT INTO canal_favorito VALUES
         <div class="query">
             <h2>Consulta 1</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 2</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 3</h2>
-            <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <p>Obtener todos los nombres de los programas:</p>
+            <pre><code>
+SELECT nombre FROM programa;
+            </code></pre>
 
             <h2>Consulta 4</h2>
-            <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <p>Obtener todos los emails de los usuarios:</p>
+            <pre><code>
+SELECT email FROM usuario;
+            </code></pre>
 
             <h2>Consulta 5</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 6</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 7</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 8</h2>
             <p>(Descripción)</p>
-            <code>(Consulta)</code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
         
         <h1 id="consultas-multitabla">Consultas Multitabla</h1>
         <div class="query">
             <h2>Consulta 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 2</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 3</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Obtener el nombre del canal y el número de canal de todos los programas:</p>
+            <pre><code>
+SELECT canal.nombre AS canal, canal.num_canal AS num_canal, programa.nombre AS programa
+FROM canal
+INNER JOIN programa ON canal.id = programa.id_canal;
+            </code></pre>
 
             <h2>Consulta 4</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Obtener los nombres y apellidos de los usuarios junto con los nombres de los canales que han marcado como favoritos:</p>
+            <pre><code>
+SELECT usuario.nombre, usuario.apellido1, usuario.apellido2, canal.nombre AS canal_favorito
+FROM usuario
+INNER JOIN canal_favorito ON usuario.nick = canal_favorito.id_usuario
+INNER JOIN canal ON canal_favorito.id_canal = canal.id;
+            </code></pre>
 
             <h2>Consulta 5</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 6</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 7</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 8</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="inserciones-modificaciones-eliminaciones">Inserciones, Modificaciones y Eliminaciones</h1>
         <div class="query">
             <h2>Inserción 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Inserción 2</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Inserción 3</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Agregar un nuevo programa favorito para un usuario:</p>
+            <pre><code>
+INSERT INTO programa_favorito (id, id_usuario, id_programa) 
+VALUES ('fav_programa7', 'manuel_89', 'elTiempo');
+            </code></pre>
 
             <h2>Inserción 4</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Agregar un nuevo canal favorito para un usuario:</p>
+            <pre><code>
+INSERT INTO canal_favorito (id, id_usuario, id_canal) 
+VALUES ('fav_canal7', 'lauraSmith', 'natGeo');
+            </code></pre>
 
             <h2>Modificación 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Modificación 2</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
-
-            <h2>Modificación 3</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
-
-            <h2>Modificación 4</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Eliminación 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Eliminación 2</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
-
-            <h2>Eliminación 3</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
-
-            <h2>Eliminación 4</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="usuarios-permisos">Usuarios y permisos</h1>
         <div class="query">
             <h2>Consulta 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 2</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Creación de un nuevo usuario 'editor' con permisos de lectura y escritura sobre las tablas de programas y canales:</p>
+            <pre><code>
+CREATE USER 'editor'@'localhost' IDENTIFIED BY 'contraseñaEditor';
+GRANT SELECT, INSERT, UPDATE, DELETE ON tantateletevuelvetonto.programa TO 'editor'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON tantateletevuelvetonto.canal TO 'editor'@'localhost';
+            </code></pre>
 
             <h2>Consulta 3</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Consulta 4</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="vistas">Vistas</h1>
         <div class="query">
             <h2>Viasta 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Vista 2</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Detalles de los canales favoritos de los usuarios:</p>
+            <pre><code>
+CREATE VIEW canales_favoritos_usuario AS
+SELECT usuario.nick, canal.nombre AS canal_favorito
+FROM usuario
+INNER JOIN canal_favorito ON usuario.nick = canal_favorito.id_usuario
+INNER JOIN canal ON canal_favorito.id_canal = canal.id;
+            </code></pre>
 
             <h2>Vista 3</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Vista 4</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="indices">Índices</h1>
         <div class="query">
             <h2>Índice 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Índice 2</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Crear un índice en el campo 'nombre' de la tabla 'canal':</p>
+            <pre><code>
+CREATE INDEX idx_canal_nombre ON canal(nombre);
+            </code></pre>
 
             <h2>Índice 3</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Índice 4</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="triggers">Triggers</h1>
         <div class="query">
             <h2>Trigger 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
             
             <h2>Trigger 2</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Antes de insertar en 'programa_favorito', verificar si el usuario ya tiene ese programa como favorito:</p>
+            <pre><code>
+DELIMITER $$
+
+CREATE TRIGGER before_insert_programa_favorito
+BEFORE INSERT ON programa_favorito
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM programa_favorito WHERE id_usuario = NEW.id_usuario AND id_programa = NEW.id_programa) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Este programa ya está marcado como favorito por el usuario.';
+    END IF;
+END$$
+
+DELIMITER ;
+            </code></pre>
 
             <h2>Trigger 3</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Trigger 4</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
 
         <h1 id="procedimientos">Procedimientos</h1>
         <div class="query">
             <h2>Procedimiento 1</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Procedimiento 2</h2>
-            <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <p>Encontrar usuarios que tienen más de un programa favorito:</p>
+            <pre><code>
+DELIMITER //
+
+CREATE PROCEDURE encontrar_usuarios_con_mas_de_un_favorito ()
+BEGIN
+    SELECT id_usuario
+    FROM programa_favorito
+    GROUP BY id_usuario
+    HAVING COUNT(*) > 1;
+END //
+
+DELIMITER ;
+            </code></pre>
 
             <h2>Procedimiento 3</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
 
             <h2>Procedimiento 4</h2>
             <p>(Descripción)</p>
-            <code>
-                (Consulta)
-            </code>
+            <pre><code>
+(Consulta)
+            </code></pre>
         </div>
     </div>
 </body>
