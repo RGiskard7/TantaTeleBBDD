@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Datos - TantaTele - Consultas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Proyecto TantaTele</h1>
+        <p>
+            Este proyecto consiste en una aplicación móvil que centralice toda la información de canales de
+            televisión de todo el mundo, proporcionando a los usuarios una experiencia
+            completa para gestionar y disfrutar de sus programas favoritos y horarios de
+            emisión.
+        </p>
+
+        <div class="table-of-contents">
+            <h3>Contenido</h3>
+            <ul>
+                <li><a href="#creacion-base-datos">Creación de la base de datos</a></li>
+                <li><a href="#consultas-monotabla">Consultas Monotabla</a></li>
+                <li><a href="#consultas-multitabla">Consultas Multitabla</a></li>
+                <li><a href="#inserciones-modificaciones-eliminaciones">Inserciones, Modificaciones y Eliminaciones</a></li>
+                <li><a href="#usuarios-permisos">Usuarios y permisos</a></li>
+                <li><a href="#vistas">Vistas</a></li>
+                <li><a href="#indices">Índices</a></li>
+                <li><a href="#triggers">Triggers</a></li>
+                <li><a href="#procedimientos">Procedimientos</a></li>
+            </ul>
+        </div>
+
+        <h1 id="creacion-base-datos">Creación de la base de datos</h1>
+        <div class="database-script">
+            <p>A continuación se muestra el script para crear la base de datos TantaTele:</p>
+            <pre><code>
+DROP DATABASE IF EXISTS tantateletevuelvetonto;
+
+CREATE DATABASE tantateletevuelvetonto CHARACTER SET utf8mb4;
+
+USE tantateletevuelvetonto;
+
+CREATE TABLE usuario (
+    nick VARCHAR (50) PRIMARY KEY,
+    contrasenia VARCHAR (20) NOT NULL,
+    nombre VARCHAR (50) NOT NULL,
+    apellido1 VARCHAR (50) NOT NULL,
+    apellido2 VARCHAR (50),
+    email VARCHAR (50) NOT NULL,
+    iban VARCHAR (24) NOT NULL
+);
+
+CREATE TABLE canal (
+    id VARCHAR (20) PRIMARY KEY,
+    nombre VARCHAR (50) NOT NULL,
+    num_canal INT (3) NOT NULL,
+    tipo ENUM ('gratuito', 'de pago')
+);
+
+CREATE TABLE programa (
+    id VARCHAR (20) PRIMARY KEY,
+    nombre VARCHAR (20) NOT NULL,
+    id_canal VARCHAR (20),
+    hora_inicio TIMESTAMP,
+    hora_fin TIMESTAMP,
+    FOREIGN KEY (id_canal) REFERENCES canal(id)
+);
+
+CREATE TABLE programa_favorito (
+    id VARCHAR (20),
+    id_usuario VARCHAR (50),
+    id_programa VARCHAR (20),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(nick),
+    FOREIGN KEY (id_programa) REFERENCES programa(id)
+);
+
+CREATE TABLE canal_favorito (
+    id VARCHAR (20),
+    id_usuario VARCHAR (50),
+    id_canal VARCHAR (20),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(nick),
+    FOREIGN KEY (id_canal) REFERENCES canal(id));
+    
+INSERT INTO usuario VALUES
+('javier25', 'claveSegura1', 'Javier', 'González', 'Martínez', 'javier@email.com', 'ES0123456789012345678901'),
+('ana84', 'contraseñaABC', 'Ana', 'Ramírez', 'Pérez', 'ana@email.com', 'ES9876543210987654321098'),
+('manuel_89', 'p4l4br4Secr3ta', 'Manuel', 'Fernández', 'López', 'carlos@email.com', 'ES1112233445566778899000'),
+('lauraSmith', 'laUr@2022', 'Laura', 'Smith', NULL, 'laura@email.com', 'ES4455667788990011223344'),
+('raul90', 'claveRaul', 'Raúl', 'Hernández', 'Gómez', 'raul@email.com', 'ES99887766554433221100'),
+('clara_jones', 'claveClara', 'Clara', 'Jones', NULL, 'clara@email.com', 'ES66778899001122334455');
+
+INSERT INTO canal VALUES
+('cineCanal', 'Cine Canal', 101, 'de pago'),
+('natGeo', 'National Geographic', 102, 'de pago'),
+('tele5', 'Telecinco', 103, 'gratuito'),
+('discovery', 'Discovery Channel', 104, 'de pago'),
+('antena3', 'Antena 3', 105, 'gratuito'),
+('mtv', 'MTV', 106, 'de pago');
+
+INSERT INTO programa VALUES
+('peliculaNoche', 'Pelicula de Noche', 'cineCanal', '2024-01-16 20:00:00', '2024-01-16 22:30:00'),
+('mundoSubmarino', 'El Mundo Submarino', 'natGeo', '2024-01-16 18:00:00', '2024-01-16 19:30:00'),
+('noticias20h', 'Noticias 20h', 'tele5', '2024-01-16 20:00:00', '2024-01-16 20:30:00'),
+('historiaAntigua', 'Historia Antigua', 'discovery', '2024-01-16 15:00:00', '2024-01-16 16:30:00'),
+('elTiempo', 'El Tiempo', 'antena3', '2024-01-16 19:00:00', '2024-01-16 19:30:00'),
+('conciertoMTV', 'Concierto MTV', 'mtv', '2024-01-16 21:00:00', '2024-01-16 22:30:00');
+
+INSERT INTO programa_favorito VALUES
+('fav_programa1', 'javier25', 'peliculaNoche'),
+('fav_programa2', 'ana84', 'mundoSubmarino'),
+('fav_programa3', 'manuel_89', 'noticias20h'),
+('fav_programa4', 'lauraSmith', 'historiaAntigua'),
+('fav_programa5', 'raul90', 'elTiempo'),
+('fav_programa6', 'clara_jones', 'conciertoMTV');
+
+INSERT INTO canal_favorito VALUES
+('fav_canal1', 'javier25', 'cineCanal'),
+('fav_canal2', 'ana84', 'natGeo'),
+('fav_canal3', 'manuel_89', 'tele5'),
+('fav_canal4', 'lauraSmith', 'discovery'),
+('fav_canal5', 'raul90', 'antena3'),
+('fav_canal6', 'clara_jones', 'mtv');
+            </code></pre>
+        </div>
+
+        <h1 id="consultas-monotabla">Consultas Monotabla</h1>
+        <div class="query">
+            <h2>Consulta 1</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 2</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 3</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 4</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 5</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 6</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 7</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+
+            <h2>Consulta 8</h2>
+            <p>(Descripción)</p>
+            <code>(Consulta)</code>
+        </div>
+        
+        <h1 id="consultas-multitabla">Consultas Multitabla</h1>
+        <div class="query">
+            <h2>Consulta 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 5</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 6</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 7</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 8</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="inserciones-modificaciones-eliminaciones">Inserciones, Modificaciones y Eliminaciones</h1>
+        <div class="query">
+            <h2>Inserción 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Inserción 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Inserción 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Inserción 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Modificación 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Modificación 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Modificación 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Modificación 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Eliminación 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Eliminación 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Eliminación 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Eliminación 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="usuarios-permisos">Usuarios y permisos</h1>
+        <div class="query">
+            <h2>Consulta 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Consulta 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="vistas">Vistas</h1>
+        <div class="query">
+            <h2>Viasta 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Vista 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Vista 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Vista 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="indices">Índices</h1>
+        <div class="query">
+            <h2>Índice 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Índice 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Índice 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Índice 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="triggers">Triggers</h1>
+        <div class="query">
+            <h2>Trigger 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+            
+            <h2>Trigger 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Trigger 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Trigger 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+
+        <h1 id="procedimientos">Procedimientos</h1>
+        <div class="query">
+            <h2>Procedimiento 1</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Procedimiento 2</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Procedimiento 3</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+
+            <h2>Procedimiento 4</h2>
+            <p>(Descripción)</p>
+            <code>
+                (Consulta)
+            </code>
+        </div>
+    </div>
+</body>
+</html>

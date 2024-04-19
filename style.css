@@ -1,0 +1,115 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.query {
+    margin-top: 20px;
+}
+
+.query h2 {
+    color: #007bff;
+}
+
+.query p {
+    margin-top: 10px;
+    color: #555;
+}
+
+code {
+    display: block;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+    color: #000;
+    font-family: Consolas, monospace;
+}
+
+.database-script {
+    max-width: 100%;
+    overflow-x: auto; /* Agrega una barra de desplazamiento horizontal si el contenido es demasiado grande */
+    text-align: left; /* Alinea el texto a la izquierda */
+}
+
+pre {
+    white-space: pre-wrap; /* Permite que el texto se rompa automáticamente y se ajuste al ancho del contenedor */
+    word-wrap: break-word; /* Para permitir el ajuste de palabras en navegadores antiguos */
+    font-family: monospace; /* Utiliza una fuente monoespaciada para mantener el formato */
+    margin: 0;
+    padding: 10px;
+   
+}
+
+.table-of-contents {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-of-contents h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.table-of-contents ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.table-of-contents li {
+    margin-bottom: 5px;
+}
+
+.table-of-contents a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.table-of-contents a:hover {
+    text-decoration: underline;
+}
+
+@media only screen and (max-width: 600px) {
+    .container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .query h2 {
+        font-size: 20px;
+    }
+
+    .query p {
+        font-size: 16px;
+    }
+
+    code {
+        font-size: 14px;
+    }
+}
+
+
+
