@@ -127,15 +127,15 @@ INSERT INTO canal_favorito VALUES
         <h1 id="consultas-monotabla">Consultas Monotabla</h1>
         <div class="query">
             <h2>Consulta 1</h2>
-            <p>(Descripción)</p>
+            <p>Obtener todos los usuarios registrados en la tabla 'usuario':</p>
             <pre><code>
-(Consulta)
+SELECT * FROM usuario;
             </code></pre>
 
             <h2>Consulta 2</h2>
-            <p>(Descripción)</p>
+            <p>Obtener todos los canales de tipo 'de pago':</p>
             <pre><code>
-(Consulta)
+SELECT * FROM canal WHERE tipo = 'de pago';
             </code></pre>
 
             <h2>Consulta 3</h2>
@@ -178,15 +178,20 @@ SELECT email FROM usuario;
         <h1 id="consultas-multitabla">Consultas Multitabla</h1>
         <div class="query">
             <h2>Consulta 1</h2>
-            <p>(Descripción)</p>
+            <p>Obtener el nombre del programa y el nombre del canal al que pertenece:</p>
             <pre><code>
-(Consulta)
+SELECT programa.nombre AS programa, canal.nombre AS canal
+FROM programa
+INNER JOIN canal ON programa.id_canal = canal.id;
             </code></pre>
 
             <h2>Consulta 2</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de los programas favoritos y los nombres de los usuarios que los han marcado como favoritos:</p>
             <pre><code>
-(Consulta)
+SELECT programa.nombre AS programa_favorito, usuario.nombre AS nombre_usuario
+FROM programa
+INNER JOIN programa_favorito ON programa.id = programa_favorito.id_programa
+INNER JOIN usuario ON programa_favorito.id_usuario = usuario.nick;
             </code></pre>
 
             <h2>Consulta 3</h2>
@@ -234,15 +239,17 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
         <h1 id="inserciones-modificaciones-eliminaciones">Inserciones, Modificaciones y Eliminaciones</h1>
         <div class="query">
             <h2>Inserción 1</h2>
-            <p>(Descripción)</p>
+            <p>Agregar un nuevo usuario:</p>
             <pre><code>
-(Consulta)
+INSERT INTO usuario (nick, contrasenia, nombre, apellido1, email, iban) 
+VALUES ('nuevo_usuario', 'password123', 'Nombre', 'Apellido1', 'correo@ejemplo.com', 'ES1234567890123456789012');
             </code></pre>
 
             <h2>Inserción 2</h2>
-            <p>(Descripción)</p>
+            <p>Agregar un nuevo canal favorito para un usuario:</p>
             <pre><code>
-(Consulta)
+INSERT INTO canal_favorito (id, id_usuario, id_canal) 
+VALUES ('nuevo_id', 'javier25', 'cineCanal');
             </code></pre>
 
             <h2>Inserción 3</h2>
@@ -287,9 +294,10 @@ VALUES ('fav_canal7', 'lauraSmith', 'natGeo');
         <h1 id="usuarios-permisos">Usuarios y permisos</h1>
         <div class="query">
             <h2>Consulta 1</h2>
-            <p>(Descripción)</p>
+            <p>Creación de un nuevo usuario 'analista' con permisos de solo lectura sobre todas las tablas:</p>
             <pre><code>
-(Consulta)
+CREATE USER 'analista'@'localhost' IDENTIFIED BY 'contraseñaAnalista';
+GRANT SELECT ON tantateletevuelvetonto.* TO 'analista'@'localhost';
             </code></pre>
 
             <h2>Consulta 2</h2>
@@ -315,10 +323,16 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON tantateletevuelvetonto.canal TO 'editor'
 
         <h1 id="vistas">Vistas</h1>
         <div class="query">
-            <h2>Viasta 1</h2>
-            <p>(Descripción)</p>
+            <h2>Vista 1</h2>
+            <p>Lista de programas favoritos de cada usuario:</p>
             <pre><code>
-(Consulta)
+CREATE VIEW programas_favoritos_usuario AS
+SELECT usuario.nick, programa.nombre AS programa_favorito
+FROM usuario
+INNER JOIN programa_favorito ON usuario.nick = programa_favorito.id_usuario
+INNER JOIN programa ON programa_favorito.id_programa = programa.id;
+
+SELECT * FROM programas_favoritos_usuario;
             </code></pre>
 
             <h2>Vista 2</h2>
@@ -347,9 +361,9 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
         <h1 id="indices">Índices</h1>
         <div class="query">
             <h2>Índice 1</h2>
-            <p>(Descripción)</p>
+            <p>Crear un índice en el campo 'nick' de la tabla 'usuario':</p>
             <pre><code>
-(Consulta)
+CREATE INDEX idx_usuario_nick ON usuario(nick);
             </code></pre>
 
             <h2>Índice 2</h2>
@@ -374,12 +388,6 @@ CREATE INDEX idx_canal_nombre ON canal(nombre);
         <h1 id="triggers">Triggers</h1>
         <div class="query">
             <h2>Trigger 1</h2>
-            <p>(Descripción)</p>
-            <pre><code>
-(Consulta)
-            </code></pre>
-            
-            <h2>Trigger 2</h2>
             <p>Antes de insertar en 'programa_favorito', verificar si el usuario ya tiene ese programa como favorito:</p>
             <pre><code>
 DELIMITER $$
@@ -391,6 +399,21 @@ BEGIN
     IF EXISTS (SELECT 1 FROM programa_favorito WHERE id_usuario = NEW.id_usuario AND id_programa = NEW.id_programa) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Este programa ya está marcado como favorito por el usuario.';
     END IF;
+END$$
+
+DELIMITER ;
+            </code></pre>
+            
+            <h2>Trigger 2</h2>
+            <p>Después de eliminar un usuario, eliminar todos sus programas favoritos:</p>
+            <pre><code>
+DELIMITER $$
+
+CREATE TRIGGER after_delete_usuario
+AFTER DELETE ON usuario
+FOR EACH ROW
+BEGIN
+    DELETE FROM programa_favorito WHERE id_usuario = OLD.nick;
 END$$
 
 DELIMITER ;
@@ -412,9 +435,25 @@ DELIMITER ;
         <h1 id="procedimientos">Procedimientos</h1>
         <div class="query">
             <h2>Procedimiento 1</h2>
-            <p>(Descripción)</p>
+            <p>Calcular la duración de un programa dado su id:</p>
             <pre><code>
-(Consulta)
+DELIMITER //
+
+CREATE PROCEDURE calcular_duracion_programa (IN programa_id VARCHAR(20), OUT duracion INT)
+BEGIN
+    DECLARE inicio TIMESTAMP;
+    DECLARE fin TIMESTAMP;
+    
+    SELECT hora_inicio INTO inicio FROM programa WHERE id = programa_id;
+    SELECT hora_fin INTO fin FROM programa WHERE id = programa_id;
+    
+    SET duracion = TIMESTAMPDIFF(MINUTE, inicio, fin);
+END //
+
+DELIMITER ;
+
+CALL calcular_duracion_programa('peliculaNoche', @duracion);
+SELECT @duracion;                
             </code></pre>
 
             <h2>Procedimiento 2</h2>
