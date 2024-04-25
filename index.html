@@ -151,15 +151,15 @@ SELECT email FROM usuario;
             </code></pre>
 
             <h2>Consulta 5</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres y apellidos de todos los usuarios:</p>
             <pre><code>
-(Consulta)
+SELECT nombre, apellido1, apellido2 FROM usuario;
             </code></pre>
 
             <h2>Consulta 6</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de todos los canales de tipo 'gratuito':</p>
             <pre><code>
-(Consulta)
+SELECT nombre FROM canal WHERE tipo = 'gratuito';
             </code></pre>
 
             <h2>Consulta 7</h2>
@@ -212,15 +212,23 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
             </code></pre>
 
             <h2>Consulta 5</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de los programas favoritos y los nombres de los usuarios que los han marcado como favoritos, as&iacute; como el nombre del canal al que pertenece cada programa favorito:</p>
             <pre><code>
-(Consulta)
+SELECT pf.id_usuario, pf.id_programa, p.nombre AS nombre_programa, c.nombre AS nombre_canal, u.nombre AS nombre_usuario
+FROM programa_favorito pf
+INNER JOIN programa p ON pf.id_programa = p.id
+INNER JOIN canal c ON p.id_canal = c.id
+INNER JOIN usuario u ON pf.id_usuario = u.nick;
             </code></pre>
 
             <h2>Consulta 6</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de los usuarios y los nombres de los programas favoritos que tienen un programa con una duraci&oacute;n mayor a 2 horas:</p>
             <pre><code>
-(Consulta)
+SELECT u.nombre AS nombre_usuario, p.nombre AS nombre_programa
+FROM usuario u
+INNER JOIN programa_favorito pf ON u.nick = pf.id_usuario
+INNER JOIN programa p ON pf.id_programa = p.id
+WHERE TIMEDIFF(p.hora_fin, p.hora_inicio) > '02:00:00';
             </code></pre>
 
             <h2>Consulta 7</h2>
@@ -274,15 +282,15 @@ VALUES ('fav_canal7', 'lauraSmith', 'natGeo');
             </code></pre>
 
             <h2>Modificación 1</h2>
-            <p>(Descripción)</p>
+            <p>Cambiar el nombre de un usuario:</p>
             <pre><code>
-(Consulta)
+UPDATE usuario SET nombre = 'NuevoNombre' WHERE nick = 'javier25';
             </code></pre>
 
             <h2>Modificación 2</h2>
-            <p>(Descripción)</p>
+            <p>Cambiar el tipo de un canal:</p>
             <pre><code>
-(Consulta)
+UPDATE canal SET tipo = 'de pago' WHERE id = 'cineCanal';
             </code></pre>
 
             <h2>Eliminación 1</h2>
@@ -318,9 +326,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON tantateletevuelvetonto.canal TO 'editor'
             </code></pre>
 
             <h2>Consulta 3</h2>
-            <p>(Descripción)</p>
+            <p>Creación de un nuevo usuario 'admin' con permisos de administrador sobre la base de datos.</p>
             <pre><code>
-(Consulta)
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'contraseñaAdmin';
+GRANT ALL PRIVILEGES ON tantateletevuelvetonto.* TO 'admin'@'localhost';
             </code></pre>
 
             <h2>Consulta 4</h2>
@@ -357,9 +366,14 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
             </code></pre>
 
             <h2>Vista 3</h2>
-            <p>(Descripción)</p>
+            <p>Lista de programas y sus canales asociados.</p>
             <pre><code>
-(Consulta)
+CREATE VIEW programas_y_canales AS
+SELECT programa.nombre AS nombre_programa, canal.nombre AS nombre_canal
+FROM programa
+INNER JOIN canal ON programa.id_canal = canal.id;
+
+SELECT * FROM programas_y_canales;
             </code></pre>
 
             <h2>Vista 4</h2>
@@ -388,9 +402,9 @@ CREATE INDEX idx_canal_nombre ON canal(nombre);
             </code></pre>
 
             <h2>Índice 3</h2>
-            <p>(Descripción)</p>
+            <p>Crear un índice en el campo 'id_canal' de la tabla 'programa'.</p>
             <pre><code>
-(Consulta)
+CREATE INDEX idx_programa_id_canal ON programa(id_canal);
             </code></pre>
 
             <h2>Índice 4</h2>
@@ -435,9 +449,22 @@ DELIMITER ;
             </code></pre>
 
             <h2>Trigger 3</h2>
-            <p>(Descripción)</p>
+            <p>Antes de actualizar el tipo de un canal, verificar si hay programas asociados a él.</p>
             <pre><code>
-(Consulta)
+DELIMITER $$
+
+CREATE TRIGGER before_update_canal
+BEFORE UPDATE ON canal
+FOR EACH ROW
+BEGIN
+    IF (NEW.tipo = 'de pago') THEN
+        IF EXISTS (SELECT 1 FROM programa WHERE id_canal = OLD.id) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede cambiar el tipo del canal porque tiene programas asociados.';
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
             </code></pre>
 
             <h2>Trigger 4</h2>
@@ -497,9 +524,18 @@ DELIMITER ;
             </code></pre>
 
             <h2>Procedimiento 3</h2>
-            <p>(Descripción)</p>
+            <p>Actualizar la hora de inicio de un programa</p>
             <pre><code>
-(Consulta)
+DELIMITER //
+
+CREATE PROCEDURE actualizar_hora_inicio_programa (IN programa_id VARCHAR(20), IN nueva_hora_inicio TIMESTAMP)
+BEGIN
+    UPDATE programa
+    SET hora_inicio = nueva_hora_inicio
+    WHERE id = programa_id;
+END //
+
+DELIMITER ;
             </code></pre>
 
             <h2>Procedimiento 4</h2>
