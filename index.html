@@ -163,15 +163,15 @@ SELECT email FROM usuario;
             </code></pre>
 
             <h2>Consulta 7</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres y apellidos de los usuarios cuyo nombre comience con la letra 'J':</p>
             <pre><code>
-(Consulta)
+SELECT nombre, apellido1, apellido2 FROM usuario WHERE nombre LIKE 'J%';
             </code></pre>
 
             <h2>Consulta 8</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de los programas que tienen una duración superior a 2 horas:</p>
             <pre><code>
-(Consulta)
+SELECT nombre FROM programa WHERE TIMEDIFF(hora_fin, hora_inicio) > '02:00:00';
             </code></pre>
         </div>
         
@@ -224,15 +224,22 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
             </code></pre>
 
             <h2>Consulta 7</h2>
-            <p>(Descripción)</p>
+            <p>Obtener los nombres de los programas favoritos y el nombre del canal al que pertenece cada programa favorito para un usuario específico:</p>
             <pre><code>
-(Consulta)
+SELECT pf.id_usuario, pf.id_programa, p.nombre AS nombre_programa, c.nombre AS nombre_canal
+FROM programa_favorito pf
+INNER JOIN programa p ON pf.id_programa = p.id
+INNER JOIN canal c ON p.id_canal = c.id
+WHERE pf.id_usuario = 'javier25';
             </code></pre>
 
             <h2>Consulta 8</h2>
-            <p>(Descripción)</p>
+            <p>Obtener el nombre del canal y el número de canal de todos los programas favoritos de un usuario específico:</p>
             <pre><code>
-(Consulta)
+SELECT cf.id_usuario, cf.id_canal, c.nombre AS nombre_canal, c.num_canal
+FROM canal_favorito cf
+INNER JOIN canal c ON cf.id_canal = c.id
+WHERE cf.id_usuario = 'ana84';
             </code></pre>
         </div>
 
@@ -279,15 +286,17 @@ VALUES ('fav_canal7', 'lauraSmith', 'natGeo');
             </code></pre>
 
             <h2>Eliminación 1</h2>
-            <p>(Descripción)</p>
+            <p>Eliminar un usuario:</p>
             <pre><code>
-(Consulta)
+DELETE FROM programa_favorito WHERE id_usuario = 'javier25';
+DELETE FROM canal_favorito WHERE id_usuario = 'javier25';
+DELETE FROM usuario WHERE nick = 'javier25';
             </code></pre>
 
             <h2>Eliminación 2</h2>
-            <p>(Descripción)</p>
+            <p>Eliminar un programa favorito de un usuario:</p>
             <pre><code>
-(Consulta)
+DELETE FROM programa_favorito WHERE id_usuario = 'ana84' AND id_programa = 'mundoSubmarino';
             </code></pre>
         </div>
 
@@ -315,9 +324,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON tantateletevuelvetonto.canal TO 'editor'
             </code></pre>
 
             <h2>Consulta 4</h2>
-            <p>(Descripción)</p>
+            <p>Creación de un nuevo usuario 'invitado' con permisos limitados para visualizar cierta información.</p>
             <pre><code>
-(Consulta)
+CREATE USER 'invitado'@'localhost' IDENTIFIED BY 'contraseñaInvitado';
+GRANT SELECT ON tantateletevuelvetonto.canal TO 'invitado'@'localhost';
+GRANT SELECT ON tantateletevuelvetonto.programa TO 'invitado'@'localhost';
             </code></pre>
         </div>
 
@@ -352,9 +363,13 @@ INNER JOIN canal ON canal_favorito.id_canal = canal.id;
             </code></pre>
 
             <h2>Vista 4</h2>
-            <p>(Descripción)</p>
+            <p>Muestra la duración de cada programa.</p>
             <pre><code>
-(Consulta)
+CREATE VIEW programas_con_duracion AS
+SELECT programa.nombre AS nombre_programa, TIMESTAMPDIFF(MINUTE, programa.hora_inicio, programa.hora_fin) AS duracion_minutos
+FROM programa;
+
+SELECT * FROM programas_con_duracion;
             </code></pre>
         </div>
 
@@ -379,9 +394,9 @@ CREATE INDEX idx_canal_nombre ON canal(nombre);
             </code></pre>
 
             <h2>Índice 4</h2>
-            <p>(Descripción)</p>
+            <p>Crear un índice en el campo 'id_usuario' de la tabla 'programa_favorito'.</p>
             <pre><code>
-(Consulta)
+CREATE INDEX idx_programa_favorito_id_usuario ON programa_favorito(id_usuario);
             </code></pre>
         </div>
 
@@ -426,9 +441,18 @@ DELIMITER ;
             </code></pre>
 
             <h2>Trigger 4</h2>
-            <p>(Descripción)</p>
+            <p>Después de insertar un nuevo usuario, asignar un canal favorito por defecto.</p>
             <pre><code>
-(Consulta)
+DELIMITER $$
+
+CREATE TRIGGER after_insert_usuario
+AFTER INSERT ON usuario
+FOR EACH ROW
+BEGIN
+	INSERT INTO canal_favorito (id, id_usuario, id_canal) VALUES (UUID(), NEW.nick, 'id_canal_por_defecto');
+END$$
+
+DELIMITER ; 
             </code></pre>
         </div>
 
@@ -479,9 +503,16 @@ DELIMITER ;
             </code></pre>
 
             <h2>Procedimiento 4</h2>
-            <p>(Descripción)</p>
+            <p>Eliminar todos los programas de un canal dado su id</p>
             <pre><code>
-(Consulta)
+DELIMITER //
+
+CREATE PROCEDURE eliminar_programas_de_canal (IN canal_id VARCHAR(20))
+BEGIN
+    DELETE FROM programa WHERE id_canal = canal_id;
+END //
+
+DELIMITER ;
             </code></pre>
         </div>
     </div>
